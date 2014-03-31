@@ -15,4 +15,8 @@ public abstract class Estimation {
 	public abstract boolean isConflict(Estimation another);
 
 	public abstract boolean isEqual(Estimation parentEst);
+
+	public abstract boolean isWin();
+
+	public abstract boolean isLose();
 }

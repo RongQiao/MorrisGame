@@ -48,8 +48,8 @@ public class MiniMaxOpeningImproved extends MorrisMiniMax implements IMorrisPhas
 	}
 
 	@Override
-	public int getSearchDepthLimit() {
-		return MorrisPhaseStrategyOpening.SEARCH_DEP_LIMIT;
+	public int getSearchDepthLimit(MorrisBoard board) {
+		return MorrisPhaseStrategyOpening.determinApproporiateDepth(board);
 	}
 
 }

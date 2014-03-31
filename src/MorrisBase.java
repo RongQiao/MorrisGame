@@ -9,7 +9,7 @@ public abstract class MorrisBase implements IMorrisEvaluateAlgorithm{
 	public static boolean checkArgs(String args[]) {
 		boolean argsValid = false;
 		
-		if (args.length == 3) {
+		if (args.length >= 3) {
 			String inFN = args[0];
 			//check validation of args
 			if (UIController.isFileExist(inFN)) {
@@ -20,7 +20,12 @@ public abstract class MorrisBase implements IMorrisEvaluateAlgorithm{
 	}
 	
 	public boolean checkDepth(int depth) {
-		if (depth <= getSearchDepthLimit()) {
+		MorrisBoard inputBd = mTree.getBoard();
+		int depthLimit = getSearchDepthLimit(inputBd);
+		if (depth <= depthLimit) {
+			if (depthLimit == MorrisPhaseStrategyGame.UNVALIED) {
+				System.out.println("Unvalid input position for play game.");
+			}
 			return true;
 		}
 		else {
@@ -115,12 +120,12 @@ public abstract class MorrisBase implements IMorrisEvaluateAlgorithm{
 	}	
 
 	/*
-	 * if the low depth has decided WIN or LOSE, shouldn't continue to expand to higher depth
+	 * if the low depth has decided WIN or LOSE, shouldn't continue to expand to higher depth, which is useless and exhaust time and space
 	 * for example: with input xxxxxBxWWxWxxxBBxxxxxxx, W move to b3 from e2 can be figured out as WIN on depth 1, 
-	 * it's unnecessary to continue 
-	 * it's better to use bread-first travel, this need be optimize, 3/31/2014
+	 * it's unnecessary to continue to next depth
+	 * it's better to use breadth-first traversal, 3/31/2014
 	 */
-	public void expandTree(Node<MorrisNodeData> crtNode, int depth) {
+	public void expandTreeDF(Node<MorrisNodeData> crtNode, int depth) {
 		int expectedDep = depth;
 		if (crtNode.getDepth() < expectedDep) {
 			MorrisBoard crtBd = crtNode.getData().getBoard();
@@ -154,6 +159,87 @@ public abstract class MorrisBase implements IMorrisEvaluateAlgorithm{
 				//current node has no possible sub node, so it's leaf node
 				Estimation est = calculateEstimation(crtBd);
 				crtNode.getData().setEstim(est);
+			}
+		}
+	}
+	
+	/*
+	 * below information shows the optimized rsult by change the expand tree from depth-first to breadth-first
+	E:\Java\Project\MorrisGame\bin>java MiniMaxGame white3w3b.txt black3w3b.txt 3
+	Board Position: xxxxxxxxWWWxxxBBxxxxxxx
+	Positions evaluated by static estimation: 130977
+	MINIMAX estimate: 10000
+	
+	E:\Java\Project\MorrisGame\bin>java MiniMaxGame white3w3b.txt black3w3b.txt 2
+	Board Position: xxxxxxxxWWWxxxBBxxxxxxx
+	Positions evaluated by static estimation: 2605
+	MINIMAX estimate: 10000
+	
+	E:\Java\Project\MorrisGame\bin>java MiniMaxGame white3w3b.txt black3w3b.txt 1
+	Board Position: xxxxxxxxWWWxxxBBxxxxxxx
+	Positions evaluated by static estimation: 53
+	MINIMAX estimate: 10000
+	
+	E:\Java\Project\MorrisGame\bin>java MiniMaxGame white3w3b.txt black3w3b.txt 1
+	Board Position: xxxxxxxxWWWxxxBBxxxxxxx
+	Positions evaluated by static estimation: 53
+	MINIMAX estimate: 10000
+	
+	E:\Java\Project\MorrisGame\bin>java MiniMaxGame white3w3b.txt black3w3b.txt 2
+	Board Position: xxxxxxxxWWWxxxBBxxxxxxx
+	Positions evaluated by static estimation: 53
+	MINIMAX estimate: 10000
+	
+	E:\Java\Project\MorrisGame\bin>java MiniMaxGame white3w3b.txt black3w3b.txt 3
+	Board Position: xxxxxxxxWWWxxxBBxxxxxxx
+	Positions evaluated by static estimation: 53
+	MINIMAX estimate: 10000
+	 */
+	public void expandTree(Node<MorrisNodeData> crtNode, int depth) {
+		int expectedDep = depth;
+		if (crtNode.getDepth() < expectedDep) {
+			MorrisBoard crtBd = crtNode.getData().getBoard();
+			List<MorrisBoard> subBd = generateAction(crtBd);
+
+			if (subBd.size() == 0) {
+				//current node is leaf, set estimation, the expanding is done
+				Estimation est = calculateEstimation(crtBd);
+				crtNode.getData().setEstim(est);
+			}
+			else {
+				boolean toNextDepth = true;
+				for (Iterator<MorrisBoard> iter = subBd.iterator(); iter.hasNext(); ) {
+					MorrisBoard childBd = iter.next();
+					MorrisNodeData childData = new MorrisNodeData();
+					childData.setBoard(childBd);
+					Node<MorrisNodeData> child = new Node<MorrisNodeData> (childData);
+					crtNode.addChild(child);
+					//check if we need expand the current level nodes, if it's set to be false by previous node, then don't need check again
+					if (toNextDepth) {
+						//1. this level has WIN or LOSE estimation, needn't to next depth					
+						Estimation childEst = calculateEstimation(childBd);
+						if (childEst.isWin() || childEst.isLose()) {
+							toNextDepth = false;
+						}
+						//2. the depth of this level is the expected depth, don't go to next
+						if (child.getDepth() == expectedDep) {
+							toNextDepth = false;
+						}						
+					}
+
+				}
+				//added all children to current node, set estimation for children if they are leaves, otherwise continue to expand
+				Node<MorrisNodeData> childNode = crtNode.getFirstChild();
+				while (childNode != null) {
+					if (toNextDepth) {
+						expandTree(childNode, expectedDep);
+					}
+					else {
+						Estimation est = calculateEstimation(childNode.getData().getBoard());
+						childNode.getData().setEstim(est);
+					}
+					childNode = childNode.next();
+				}
 			}
 		}
 	}
@@ -200,6 +286,7 @@ public abstract class MorrisBase implements IMorrisEvaluateAlgorithm{
 	}
 
 	//the search target is a leaf node whose estimation == crtNode.estimation
+	@SuppressWarnings("unused")
 	private Node<MorrisNodeData> search(Node<MorrisNodeData> crtNode) {
 		Node<MorrisNodeData> leaf = null;
 		
@@ -268,6 +355,6 @@ public abstract class MorrisBase implements IMorrisEvaluateAlgorithm{
 	
 	public abstract Estimation calculateEstimation(MorrisBoard board);
 	public abstract List<MorrisBoard> generateAction(MorrisBoard board);
-	public abstract int getSearchDepthLimit();
+	public abstract int getSearchDepthLimit(MorrisBoard board);
 	public abstract int getEvaluatedCnt();
 }

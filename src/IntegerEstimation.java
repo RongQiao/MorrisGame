@@ -92,4 +92,14 @@ public class IntegerEstimation extends Estimation{
 		return ret;
 	}
 
+	@Override
+	public boolean isWin() {
+		return (getValue() == WIN ? true : false);
+	}
+
+	@Override
+	public boolean isLose() {
+		return (getValue() == LOSE ? true : false);
+	}
+
 }

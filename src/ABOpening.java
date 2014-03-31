@@ -42,8 +42,8 @@ public class ABOpening extends MorrisAlphaBeta implements IMorrisPhaseStrategy{
 	}
 
 	@Override
-	public int getSearchDepthLimit() {
-		return MorrisPhaseStrategyOpening.SEARCH_DEP_LIMIT;
+	public int getSearchDepthLimit(MorrisBoard board) {
+		return MorrisPhaseStrategyOpening.determinApproporiateDepth(board);
 	}
 
 }

@@ -73,8 +73,8 @@ public class MiniMaxGameImproved extends MorrisMiniMax implements IMorrisPhaseSt
 	}
 
 	@Override
-	public int getSearchDepthLimit() {
-		return MorrisPhaseStrategyGame.SEARCH_DEP_LIMIT;
+	public int getSearchDepthLimit(MorrisBoard board) {
+		return MorrisPhaseStrategyGame.determinApproporiateDepth(board);
 	}
 
 }

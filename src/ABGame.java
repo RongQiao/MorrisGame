@@ -42,7 +42,7 @@ public class ABGame extends MorrisAlphaBeta implements IMorrisPhaseStrategy{
 	}
 
 	@Override
-	public int getSearchDepthLimit() {
-		return  MorrisPhaseStrategyGame.SEARCH_DEP_LIMIT;
+	public int getSearchDepthLimit(MorrisBoard board) {
+		return  MorrisPhaseStrategyGame.determinApproporiateDepth(board);
 	}
 }
