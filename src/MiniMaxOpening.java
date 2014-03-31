@@ -8,14 +8,19 @@ public class MiniMaxOpening extends MorrisMiniMax implements IMorrisPhaseStrateg
 			String inFN = args[0];
 			String outFN = args[1];
 			String depthStr = args[2];
-			int depth = Integer.parseInt(depthStr);
-			
 			String inputPosStr = UIController.readFromFile(inFN);
 			MiniMaxOpening MMO = new MiniMaxOpening(inputPosStr);
-			MMO.play(depth);
-			String playResult = MMO.getResultStr();
-			UIController.writeToFile(outFN, playResult);
-			MMO.showPlayResult();
+			
+			int depth = Integer.parseInt(depthStr);		
+			if (MMO.checkDepth(depth)) {
+				MMO.play(depth);
+				String playResult = MMO.getResultStr();
+				UIController.writeToFile(outFN, playResult);
+				MMO.showPlayResult(MMO.orgPlayResultResponse());				
+			}
+			else {
+				System.out.println("search depth is too much.");
+			}
 		}
 		if (!argsValid) {
 			System.out.println("invalid args.");
@@ -34,6 +39,11 @@ public class MiniMaxOpening extends MorrisMiniMax implements IMorrisPhaseStrateg
 	@Override
 	public List<MorrisBoard> generateAction(MorrisBoard board) {
 		return MorrisPhaseStrategyOpening.generateAction(board);
+	}
+
+	@Override
+	public int getSearchDepthLimit() {
+		return MorrisPhaseStrategyOpening.SEARCH_DEP_LIMIT;	
 	}
 
 

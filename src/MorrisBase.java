@@ -11,15 +11,21 @@ public abstract class MorrisBase implements IMorrisEvaluateAlgorithm{
 		
 		if (args.length == 3) {
 			String inFN = args[0];
-			String depthStr = args[2];
-			int depth = Integer.parseInt(depthStr);
 			//check validation of args
-			if ((UIController.isFileExist(inFN) 
-					&& (depth < 100))) {
+			if (UIController.isFileExist(inFN)) {
 				argsValid = true;
 			}
 		}
 		return argsValid;
+	}
+	
+	public boolean checkDepth(int depth) {
+		if (depth <= getSearchDepthLimit()) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 	
 	public static List<MorrisBoard> generateAdd(MorrisBoard crtBoard) {
@@ -114,10 +120,11 @@ public abstract class MorrisBase implements IMorrisEvaluateAlgorithm{
 			MorrisBoard crtBd = crtNode.getData().getBoard();
 			List<MorrisBoard> subBd = generateAction(crtBd);
 			//for test
+			/*
 			System.out.print(crtNode.getDepth());
 			System.out.print("-");
 			System.out.print(subBd.size());
-			System.out.print(",");
+			System.out.print(",");*/
 			
 			if (subBd.size() > 0) {
 				for (Iterator<MorrisBoard> iter = subBd.iterator(); iter.hasNext(); ) {
@@ -144,13 +151,20 @@ public abstract class MorrisBase implements IMorrisEvaluateAlgorithm{
 		}
 	}
 	
-	public void showPlayResult() {
-		String line1 = "Board Position: " + getResultStr();
-		System.out.println(line1);
-		System.out.print("Positions evaluated by static estimation: ");
-		System.out.println(getEvaluatedCnt());
-		System.out.print("MINIMAX estimate: ");
-		System.out.println(getEstimation());
+	public String[] orgPlayResultResponse() {
+		String[] rst = new String[3];
+		rst[0] = "Board Position: " + getResultStr();
+		rst[1] = "Positions evaluated by static estimation: ";
+		rst[1] += getEvaluatedCnt();
+		rst[2] = "MINIMAX estimate: ";
+		rst[2] += getEstimation();
+		return rst;
+	}
+	
+	public void showPlayResult(String[] rstStr) {
+		for (int i = 0; i < rstStr.length; i++) {
+			System.out.println(rstStr[i]);
+		}
 	}
 	
 
@@ -211,8 +225,30 @@ public abstract class MorrisBase implements IMorrisEvaluateAlgorithm{
 		applyAlgorithm(root);
 	}
 	
+
+	public static String swapPosStr(String posStr) {
+		String swaped = new String();
+		for (int i = 0; i < posStr.length(); i++) {
+			char ch = posStr.charAt(i);
+			switch(ch) {
+			case 'W':
+				swaped += 'B';
+				break;
+			case 'B':
+				swaped += 'W';
+				break;
+			case 'x':
+				swaped += ch;
+				break;
+			default:
+				break;
+			}
+		}
+		return swaped;
+	}
+	
 	public abstract Estimation calculateEstimation(MorrisBoard board);
 	public abstract List<MorrisBoard> generateAction(MorrisBoard board);
-	//public abstract void play(int depth);
+	public abstract int getSearchDepthLimit();
 	public abstract int getEvaluatedCnt();
 }

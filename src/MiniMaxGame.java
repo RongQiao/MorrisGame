@@ -15,7 +15,7 @@ public class MiniMaxGame extends MorrisMiniMax implements IMorrisPhaseStrategy{
 			MMG.play(depth);
 			String playResult = MMG.getResultStr();
 			UIController.writeToFile(outFN, playResult);
-			MMG.showPlayResult();
+			MMG.showPlayResult(MMG.orgPlayResultResponse());
 		}
 		if (!argsValid) {
 			System.out.println("invalid args.");

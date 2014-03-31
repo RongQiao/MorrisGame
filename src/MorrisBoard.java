@@ -1,3 +1,6 @@
+import java.util.Iterator;
+import java.util.List;
+
 
 public class MorrisBoard {
 	private MorrisIntersection[] position;
@@ -130,7 +133,50 @@ public class MorrisBoard {
 		
 		return newBoard;
 	}
+
+	public int countEmptyNeighbor4White() {
+		return countEmptyNeighbor('W');
+	}
+
+	public int countEmptyNeighbor4Black() {
+		return countEmptyNeighbor('B');
+	}
 	
+	private int countEmptyNeighbor(char colorPiece) {
+		int cnt = 0;
+		int[] nIndex = new int[TOTALPOS];
+		for (int t = 0; t < TOTALPOS; t++) {
+			nIndex[t] = TOTALPOS;
+		}
+		for (int i = 0; i < position.length; i++) {
+			MorrisIntersection pos = position[i];
+			if (pos.getLetter() == colorPiece) {
+				List<MorrisIntersection> neighbors = pos.getNeighbor();
+				for (Iterator<MorrisIntersection> iter = neighbors.iterator(); iter.hasNext(); ) {
+					MorrisIntersection ngh = iter.next();
+					
+					if (ngh.isEmpty()) {
+						int emptyIndex = ngh.getIndex();
+						boolean added = false;
+						for (int j = 0; j < TOTALPOS; j++) {
+							if (emptyIndex == nIndex[j]) {
+								//this empty is added
+								added = true;
+								break;
+							}
+						}
+						if (!added) {
+							//add this empty to the array, and cnt + 1
+							nIndex[cnt] = emptyIndex;
+							cnt++;
+						}
+					}
+				}
+			}
+		}
+		return cnt;
+	}
+
 	
 
 }

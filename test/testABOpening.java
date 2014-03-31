@@ -4,6 +4,13 @@ import org.junit.Test;
 
 
 public class testABOpening {
+	@Test
+	public void testLine() {
+		System.out.println();
+		System.out.println("testABOpening");
+		System.out.println();		
+	}
+	
 	/*
 	 * with input "xxxxxBxWWWWWBBBBxxxxxxx", expand 2 depth
 	 * the best output should have e4=W
@@ -41,7 +48,7 @@ public class testABOpening {
 		ABO.play(depth);
 		String playResult = ABO.getResultStr();
 		UIController.writeToFile(outFN, playResult);
-		ABO.showPlayResult();
+		ABO.showPlayResult(ABO.orgPlayResultResponse());
 		
 		//check
 		String checkResult = UIController.readFromFile(outFN);

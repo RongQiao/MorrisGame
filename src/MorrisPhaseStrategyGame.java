@@ -2,6 +2,7 @@ import java.util.List;
 
 
 public class MorrisPhaseStrategyGame {
+	public static final int SEARCH_DEP_LIMIT = 6;	//according practice, 6 can limit the run under 30s
 
 	public static Estimation calculateEstimation(MorrisBoard bd) {
 		Estimation est = new IntegerEstimation();
