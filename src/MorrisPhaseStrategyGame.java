@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -35,13 +36,27 @@ public class MorrisPhaseStrategyGame {
 		return est;
 	}
 
+	/*
+	 * if black < 3, white win, doesn't need generate any action
+	 * if white = 3, hopping; > 3, move; <3, lose, doesn't need generate any action
+	 */
 	public static List<MorrisBoard> generateAction(MorrisBoard bd) {
-		if (bd.countWhite() == 3) {
-			return MorrisBase.generateHopping(bd);
+		List<MorrisBoard> possibleSubBoard = new ArrayList<MorrisBoard>();
+		
+		int numBlack = bd.countBlack();
+		if (numBlack >= 3) {
+			int numWhite = bd.countWhite();
+			if (numWhite == 3) {
+				possibleSubBoard = MorrisBase.generateHopping(bd);
+			}
+			else {
+				if (numWhite > 3) {
+					possibleSubBoard = MorrisBase.generateMove(bd);
+				}
+			}			
 		}
-		else {
-			return MorrisBase.generateMove(bd);
-		}
+		
+		return possibleSubBoard;
 	}
 
 }

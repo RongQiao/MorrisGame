@@ -9,14 +9,19 @@ public class MiniMaxGameImproved extends MorrisMiniMax implements IMorrisPhaseSt
 			String inFN = args[0];
 			String outFN = args[1];
 			String depthStr = args[2];
-			int depth = Integer.parseInt(depthStr);
 			
 			String inputPosStr = UIController.readFromFile(inFN);
 			MiniMaxGameImproved MMGI = new MiniMaxGameImproved(inputPosStr);
-			MMGI.play(depth);
-			String playResult = MMGI.getResultStr();
-			UIController.writeToFile(outFN, playResult);
-			MMGI.showPlayResult(MMGI.orgPlayResultResponse());
+			int depth = Integer.parseInt(depthStr);
+			if (MMGI.checkDepth(depth)) {
+				MMGI.play(depth);
+				String playResult = MMGI.getResultStr();
+				UIController.writeToFile(outFN, playResult);
+				MMGI.showPlayResult(MMGI.orgPlayResultResponse());			
+			}
+			else {
+				System.out.println("search depth is too much.");
+			}
 		}
 		if (!argsValid) {
 			System.out.println("invalid args.");
@@ -65,6 +70,11 @@ public class MiniMaxGameImproved extends MorrisMiniMax implements IMorrisPhaseSt
 	@Override
 	public List<MorrisBoard> generateAction(MorrisBoard board) {
 		return MorrisPhaseStrategyGame.generateAction(board);
+	}
+
+	@Override
+	public int getSearchDepthLimit() {
+		return MorrisPhaseStrategyGame.SEARCH_DEP_LIMIT;
 	}
 
 }

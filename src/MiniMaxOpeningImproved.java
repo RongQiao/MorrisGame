@@ -47,4 +47,9 @@ public class MiniMaxOpeningImproved extends MorrisMiniMax implements IMorrisPhas
 		return MorrisPhaseStrategyOpening.generateAction(board);
 	}
 
+	@Override
+	public int getSearchDepthLimit() {
+		return MorrisPhaseStrategyOpening.SEARCH_DEP_LIMIT;
+	}
+
 }

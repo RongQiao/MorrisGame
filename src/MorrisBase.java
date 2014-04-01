@@ -114,9 +114,15 @@ public abstract class MorrisBase implements IMorrisEvaluateAlgorithm{
 		return possibleBoard;
 	}	
 
+	/*
+	 * if the low depth has decided WIN or LOSE, shouldn't continue to expand to higher depth
+	 * for example: with input xxxxxBxWWxWxxxBBxxxxxxx, W move to b3 from e2 can be figured out as WIN on depth 1, 
+	 * it's unnecessary to continue 
+	 * it's better to use bread-first travel, this need be optimize, 3/31/2014
+	 */
 	public void expandTree(Node<MorrisNodeData> crtNode, int depth) {
 		int expectedDep = depth;
-		if (crtNode.getDepth() < depth) {
+		if (crtNode.getDepth() < expectedDep) {
 			MorrisBoard crtBd = crtNode.getData().getBoard();
 			List<MorrisBoard> subBd = generateAction(crtBd);
 			//for test
@@ -133,6 +139,7 @@ public abstract class MorrisBase implements IMorrisEvaluateAlgorithm{
 					childData.setBoard(childBd);
 					Node<MorrisNodeData> child = new Node<MorrisNodeData> (childData);
 					crtNode.addChild(child);
+					
 					if (child.getDepth() == expectedDep) {
 						//leaf node
 						Estimation leafEst = calculateEstimation(childBd);
@@ -172,9 +179,21 @@ public abstract class MorrisBase implements IMorrisEvaluateAlgorithm{
 		String rstStr = new String();
 		
 		Node<MorrisNodeData> root = mTree.getRoot();
-		Node<MorrisNodeData> targetLeaf = search(root);
-		if (targetLeaf != null) {
-			MorrisBoard bd = targetLeaf.getData().getBoard();
+		
+		Node<MorrisNodeData> nextMoveNode = null;
+		Estimation parentEst = root.getData().getEstim();
+		Node<MorrisNodeData> child = root.getFirstChild();
+		while (child != null) {
+			Estimation childEst = child.getData().getEstim();
+			if (childEst.isEqual(parentEst)) {
+				nextMoveNode = child;
+				break;
+			}
+			child = child.next();
+		}
+		
+		if (nextMoveNode != null) {
+			MorrisBoard bd = nextMoveNode.getData().getBoard();
 			rstStr = bd.convertPosI2C();
 		}
 		return rstStr;

@@ -49,13 +49,22 @@ public class testMiniMaxGame {
 	
 	@Test
 	public void testMainDepHigh() {
-		System.out.println("testMainDep3");
+		System.out.println("testMainDepHigh");
 		String outPosStr = testMain("white8w8b.txt", "black.txt", 6);
 		
 		boolean bW = ((outPosStr.charAt(20) == 'W')
 				|| (outPosStr.charAt(1) == 'W')
 				|| (outPosStr.charAt(4) == 'W'));
 		assertTrue(bW); 
+	}
+	
+	/*
+	 * test hopping
+	 */
+	@Test
+	public void testMainHoppingD3() {
+		System.out.println("testMainHoppingD3");
+		testMain("white3w3b.txt", "black.txt", 3);
 	}
 
 	private String testMain(String inFN, String outFN, int depth) {

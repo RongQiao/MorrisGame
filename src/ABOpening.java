@@ -8,14 +8,19 @@ public class ABOpening extends MorrisAlphaBeta implements IMorrisPhaseStrategy{
 			String inFN = args[0];
 			String outFN = args[1];
 			String depthStr = args[2];
-			int depth = Integer.parseInt(depthStr);
 			
 			String inputPosStr = UIController.readFromFile(inFN);
 			ABOpening ABO = new ABOpening(inputPosStr);
-			ABO.play(depth);
-			String playResult = ABO.getResultStr();
-			UIController.writeToFile(outFN, playResult);
-			ABO.showPlayResult(ABO.orgPlayResultResponse());
+			int depth = Integer.parseInt(depthStr);
+			if (ABO.checkDepth(depth)) {
+				ABO.play(depth);
+				String playResult = ABO.getResultStr();
+				UIController.writeToFile(outFN, playResult);
+				ABO.showPlayResult(ABO.orgPlayResultResponse());				
+			}
+			else {
+				System.out.println("search depth is too much.");
+			}
 		}
 		if (!argsValid) {
 			System.out.println("invalid args.");
@@ -34,6 +39,11 @@ public class ABOpening extends MorrisAlphaBeta implements IMorrisPhaseStrategy{
 	@Override
 	public List<MorrisBoard> generateAction(MorrisBoard board) {
 		return MorrisPhaseStrategyOpening.generateAction(board);
+	}
+
+	@Override
+	public int getSearchDepthLimit() {
+		return MorrisPhaseStrategyOpening.SEARCH_DEP_LIMIT;
 	}
 
 }

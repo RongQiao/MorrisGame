@@ -1,5 +1,6 @@
 
-public class MiniMaxOpeningBlack{
+public class MiniMaxGameBlack {
+
 	public static void main(String[] args) {
 		boolean argsValid = MorrisBase.checkArgs(args);
 		if (argsValid) {
@@ -9,16 +10,16 @@ public class MiniMaxOpeningBlack{
 			
 			String inputPosStr = UIController.readFromFile(inFN);
 			String swapedPosStr = MorrisBase.swapPosStr(inputPosStr);
-			MiniMaxOpening MMO = new MiniMaxOpening(swapedPosStr);
+			MiniMaxGame MMG = new MiniMaxGame(swapedPosStr);
 			int depth = Integer.parseInt(depthStr);
-			if (MMO.checkDepth(depth)) {
-				MMO.play(depth);
-				String playResult = MMO.getResultStr();
+			if (MMG.checkDepth(depth)) {
+				MMG.play(depth);
+				String playResult = MMG.getResultStr();
 				swapedPosStr = MorrisBase.swapPosStr(playResult);
 				UIController.writeToFile(outFN, swapedPosStr);
-				String respStr[] = MMO.orgPlayResultResponse();
+				String respStr[] = MMG.orgPlayResultResponse();
 				respStr[0] = "Board Position: " + swapedPosStr;
-				MMO.showPlayResult(respStr);				
+				MMG.showPlayResult(respStr);				
 			}
 			else {
 				System.out.println("search depth is too much.");
@@ -29,6 +30,5 @@ public class MiniMaxOpeningBlack{
 			System.out.println("invalid args.");
 		}
 	}
-
 
 }

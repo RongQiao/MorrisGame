@@ -8,9 +8,9 @@ public class MiniMaxOpening extends MorrisMiniMax implements IMorrisPhaseStrateg
 			String inFN = args[0];
 			String outFN = args[1];
 			String depthStr = args[2];
+			
 			String inputPosStr = UIController.readFromFile(inFN);
 			MiniMaxOpening MMO = new MiniMaxOpening(inputPosStr);
-			
 			int depth = Integer.parseInt(depthStr);		
 			if (MMO.checkDepth(depth)) {
 				MMO.play(depth);
